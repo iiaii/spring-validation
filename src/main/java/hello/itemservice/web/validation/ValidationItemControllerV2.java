@@ -58,8 +58,26 @@ public class ValidationItemControllerV2 {
         return "redirect:/validation/v2/items/{itemId}";
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV2(@ModelAttribute Item item,
+                            BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
+                            RedirectAttributes redirectAttributes) {
+        BindingResult errors = item.validItem(bindingResult);
+
+        // 검증에 실패하면 입력폼으로
+        if (errors.hasErrors()) {
+            log.info("errors = {}", errors);
+            return "validation/v2/addForm";
+        }
+
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";
+    }
+
+    @PostMapping("/add")
+    public String addItemV3(@ModelAttribute Item item,
                             BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
                             RedirectAttributes redirectAttributes) {
         BindingResult errors = item.validItem(bindingResult);

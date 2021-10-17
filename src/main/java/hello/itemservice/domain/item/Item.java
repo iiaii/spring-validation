@@ -53,22 +53,22 @@ public class Item {
 
     public BindingResult validItem(final BindingResult bindingResult) {
         if (!isValidItemName()) {
-            bindingResult.addError(new FieldError("item", "itemName", itemName, false, null, null, "상품 이름은 필수입니다."));
+            bindingResult.rejectValue("itemName", "required");
         }
 
         if (!isValidPrice()) {
-            bindingResult.addError(new FieldError("item", "price", price, false, null, null,  "가격은 1,000 ~ 1,000,000 까지 허용합니다."));
+            bindingResult.rejectValue("price", "range", new Object[]{1_000, 1_000_000}, null);
         }
 
         if (!isValidQuantity()) {
-            bindingResult.addError(new FieldError("item", "quantity", quantity, false, null, null,  "수량은 최대 9,999 까지 허용합니다."));
+            bindingResult.rejectValue("quantity", "max", new Object[]{9_999}, null);
         }
 
         // 복합 룰 검증
         if (Objects.nonNull(price)
                 && Objects.nonNull(quantity)
                 && !isValidTotalPrice()) {
-            bindingResult.addError(new ObjectError("item", null, null, "가격 * 수량의 합은 10,000원 이상이어야 합니다. 현재 값 = " + totalPrice()));
+            bindingResult.reject("totalPriceMin", new Object[]{1_000, totalPrice()}, null);
         }
 
         return bindingResult;
