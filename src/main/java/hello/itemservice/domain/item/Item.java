@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 
 import java.util.Objects;
 
@@ -52,6 +53,9 @@ public class Item {
     }
 
     public BindingResult validItem(final BindingResult bindingResult) {
+        // 아래 로직과 동일함
+//        ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
+
         if (!isValidItemName()) {
             bindingResult.rejectValue("itemName", "required");
         }
