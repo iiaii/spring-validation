@@ -41,16 +41,14 @@ public class ValidationItemControllerV2 {
     }
 
     @PostMapping("/add")
-    public String addItem(@ModelAttribute Item item,
-                          BindingResult bindingResult,
-                          RedirectAttributes redirectAttributes,
-                          Model model) {
-        Errors errors = item.validItem();
+    public String addItemV1(@ModelAttribute Item item,
+                          BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
+                          RedirectAttributes redirectAttributes) {
+        BindingResult errors = item.validItem(bindingResult);
 
         // 검증에 실패하면 입력폼으로
         if (errors.hasErrors()) {
-            log.info("errors = {}", errors.errors());
-            model.addAttribute("errors", errors.errors());
+            log.info("errors = {}", errors);
             return "validation/v2/addForm";
         }
 
