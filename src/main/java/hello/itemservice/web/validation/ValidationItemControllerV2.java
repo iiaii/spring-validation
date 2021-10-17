@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -19,6 +21,12 @@ import java.util.List;
 public class ValidationItemControllerV2 {
 
     private final ItemRepository itemRepository;
+    private final ItemValidator itemValidator;
+
+    @InitBinder
+    public void init(final WebDataBinder dataBinder) {
+        dataBinder.addValidators(itemValidator);
+    }
 
     @GetMapping
     public String items(Model model) {
@@ -41,32 +49,14 @@ public class ValidationItemControllerV2 {
     }
 
 //    @PostMapping("/add")
-    public String addItemV1(@ModelAttribute Item item,
-                          BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
-                          RedirectAttributes redirectAttributes) {
-        BindingResult errors = item.validItem(bindingResult);
-
-        // 검증에 실패하면 입력폼으로
-        if (errors.hasErrors()) {
-            log.info("errors = {}", errors);
-            return "validation/v2/addForm";
-        }
-
-        Item savedItem = itemRepository.save(item);
-        redirectAttributes.addAttribute("itemId", savedItem.getId());
-        redirectAttributes.addAttribute("status", true);
-        return "redirect:/validation/v2/items/{itemId}";
-    }
-
-//    @PostMapping("/add")
-    public String addItemV2(@ModelAttribute Item item,
+    public String addItemV5(@ModelAttribute Item item,
                             BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
                             RedirectAttributes redirectAttributes) {
-        BindingResult errors = item.validItem(bindingResult);
+        itemValidator.validate(item, bindingResult);
 
         // 검증에 실패하면 입력폼으로
-        if (errors.hasErrors()) {
-            log.info("errors = {}", errors);
+        if (bindingResult.hasErrors()) {
+            log.info("errors = {}", bindingResult);
             return "validation/v2/addForm";
         }
 
@@ -77,14 +67,11 @@ public class ValidationItemControllerV2 {
     }
 
     @PostMapping("/add")
-    public String addItemV3(@ModelAttribute Item item,
+    public String addItemV6(@Validated @ModelAttribute Item item,
                             BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
                             RedirectAttributes redirectAttributes) {
-        BindingResult errors = item.validItem(bindingResult);
-
-        // 검증에 실패하면 입력폼으로
-        if (errors.hasErrors()) {
-            log.info("errors = {}", errors);
+        if (bindingResult.hasErrors()) {
+            log.info("errors = {}", bindingResult);
             return "validation/v2/addForm";
         }
 
