@@ -46,6 +46,11 @@ public class ValidationItemControllerV3 {
     public String addItem(@Validated @ModelAttribute Item item,
                             BindingResult bindingResult,  // @ModelAttribute 바로 다음에 위치해야한다
                             RedirectAttributes redirectAttributes) {
+
+        if (item.isInValidTotalPrice()) {
+            bindingResult.reject("totalPriceMin", new Object[]{10_000, item.totalPrice()}, null);
+        }
+
         if (bindingResult.hasErrors()) {
             log.info("errors = {}", bindingResult);
             return "validation/v3/addForm";

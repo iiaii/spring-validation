@@ -2,6 +2,7 @@ package hello.itemservice.domain.item;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
+import org.hibernate.validator.constraints.ScriptAssert;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Max;
@@ -9,7 +10,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+
 @Data
+// 권장하는 방식이 아님
+//@ScriptAssert(lang = "javascript", script = "_this.price * _this.quantity >= 10_000", message = "최소 총합은 10,000 입니다")
 public class Item {
 
     private Long id;
